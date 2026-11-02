@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>影子接力</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <section id="select-screen" class="screen active">
+    <h1 class="logo">影子接力</h1>
+    <p class="tagline">把这一轮的自己录下来，时间倒回后和过去的你配合走到终点</p>
+    <div id="level-list"></div>
+    <div class="export-row">
+      <button id="btn-export" class="btn">导出试玩数据</button>
+      <span id="record-count"></span>
+    </div>
+  </section>
+
+  <section id="game-screen" class="screen">
+    <header id="game-header">
+      <button id="btn-back" class="icon-btn" aria-label="返回选关">←</button>
+      <div class="title" id="level-name"></div>
+      <div class="hud">
+        <span id="round-label" class="pill round">第 1 轮</span>
+        <span id="steps-label" class="pill">0/0</span>
+        <span id="shadow-label" class="pill">影子 0/0</span>
+      </div>
+    </header>
+
+    <div id="map-wrap"><div id="map"></div></div>
+
+    <div id="hint-box" class="hidden">
+      <span class="hint-tag">提示</span>
+      <span id="hint-text"></span>
+    </div>
+
+    <div id="timeline"></div>
+    <div id="status"></div>
+
+    <div id="guide"></div>
+
+    <div id="controls">
+      <button data-act="wait">等待</button>
+      <button data-act="rewind" class="primary">回溯</button>
+      <button data-act="undo">撤销</button>
+      <button data-act="restart">重开</button>
+      <button data-act="hint">提示</button>
+    </div>
+    <div class="kbd-hint">桌面操作：方向键 / WASD 移动 · 空格 等待 · R 回溯 · Z 撤销 · Backspace 重开</div>
+  </section>
+
+</div>
+
+<div id="fx-rewind">
+  <div class="flash"></div>
+  <div class="label">第 2 轮</div>
+</div>
+
+<div id="fx-win">
+  <div class="win-panel">
+    <h2>通关！</h2>
+    <p class="win-stats"></p>
+    <div class="win-actions"></div>
+  </div>
+  <div class="confetti"></div>
+</div>
+
+<div id="toast"></div>
+
+<div id="debug-panel">
+  <div class="dbg-row">
+    <button id="debug-clear" class="btn small">清空数据</button>
+  </div>
+  <pre id="debug-state"></pre>
+</div>
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>

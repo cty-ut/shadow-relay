@@ -1,0 +1,13 @@
+{
+  "name": "shadow-relay",
+  "version": "0.1.0",
+  "description": "影子接力 —— H5 回合制解谜游戏（M1）",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "devDependencies": {
+    "jsdom": "^30.1.3"
+  }
+}
