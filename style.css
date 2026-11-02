@@ -296,7 +296,12 @@ body {
   opacity: 0.75;
   transition: opacity 0.12s;
 }
-.cell.door.reverse::after { border-style: dashed; }
+.cell.door.reverse::after {
+  /* 反向门：斜条纹，和实心的普通门一眼区分 */
+  background: repeating-linear-gradient(45deg, var(--ch) 0 3px, transparent 3px 7px);
+  border-style: dashed;
+  opacity: 0.9;
+}
 .cell.door.open::after { opacity: 0.16; border-width: 1px; }
 
 /* ---------- 角色 ---------- */
@@ -690,38 +695,7 @@ body {
   line-height: 1.5;
 }
 
-/* ---------- 打磨：通道数字 / 反向门标记 / 点板高亮 ---------- */
-
-.cell.plate::before,
-.cell.door::before {
-  content: attr(data-ch);
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.6em;
-  font-weight: 700;
-  z-index: 1;
-  pointer-events: none;
-}
-.cell.plate::before { color: var(--ch); }
-.cell.plate.pressed::before { color: #171a21; }
-.cell.door::before { color: #171a21; }
-.cell.door.open::before { color: var(--ch); }
-
-.cell.door .rev-mark {
-  position: absolute;
-  top: 3%;
-  right: 5%;
-  font-size: 0.42em;
-  font-weight: 700;
-  line-height: 1.2;
-  color: #171a21;
-  z-index: 1;
-  pointer-events: none;
-}
-.cell.door.open .rev-mark { color: var(--ch); }
+/* ---------- 打磨：点板高亮 ---------- */
 
 .cell.hl { outline: 2px solid #f4f2ec; outline-offset: -2px; }
 .cell.plate.hl::after { border-width: 3px; }

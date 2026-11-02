@@ -1,6 +1,6 @@
 // test/ui.test.js —— UI 集成冒烟测试（需要 jsdom：npm install 后运行）
 // 在 jsdom 中加载 index.html，用键盘事件完整玩通关卡，验证渲染层、新手引导、三级提示与演示、
-// 标题画面、继续游戏、章末/结尾弹窗、箱子引导、通道数字与点板高亮、星标、静音开关、数据记录。
+// 标题画面、继续游戏、章末/结尾弹窗、箱子引导、点板高亮、星标、静音开关、数据记录。
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -23,7 +23,7 @@ const KEYMAP = {
   W: [' ', 'Space'],
 };
 
-test('UI 集成：标题/引导/提示/章末结尾/继续游戏/箱子引导/通道数字/星标/静音/导出', { skip: jsdom === null }, async () => {
+test('UI 集成：标题/引导/提示/章末结尾/继续游戏/箱子引导/点板高亮/星标/静音/导出', { skip: jsdom === null }, async () => {
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
   const dom = new jsdom(html, { url: 'http://localhost/?debug=1', pretendToBeVisual: true });
   const { window } = dom;
@@ -96,7 +96,7 @@ test('UI 集成：标题/引导/提示/章末结尾/继续游戏/箱子引导/�
   await sleep(50);
   assert.ok($('#select-screen').classList.contains('active'));
 
-  // ---- 关卡 1：通道数字、点板高亮、移动引导 ----
+  // ---- 关卡 1：点板高亮、移动引导 ----
   await enterCard(0);
   assert.equal($('#level-name').textContent, '1 · 踩板开门');
   assert.equal($('[data-act="rewind"]').hidden, true, 'maxShadows=0 时隐藏回溯按钮');
@@ -105,8 +105,8 @@ test('UI 集成：标题/引导/提示/章末结尾/继续游戏/箱子引导/�
 
   const plateCell = $('.cell.plate');
   const doorCell = $('.cell.door');
-  assert.equal(plateCell.dataset.ch, '1', '压力板应显示通道数字');
-  assert.equal(doorCell.dataset.ch, '1', '门应显示通道数字');
+  assert.equal(plateCell.dataset.ch, undefined, '压力板不显示通道数字');
+  assert.equal(doorCell.dataset.ch, undefined, '门不显示通道数字');
   plateCell.click();
   assert.ok(doorCell.classList.contains('hl'), '点板应高亮同通道的门');
   assert.ok(plateCell.classList.contains('hl'));
@@ -163,11 +163,11 @@ test('UI 集成：标题/引导/提示/章末结尾/继续游戏/箱子引导/�
   for (const [n, sol] of [[4, 'DDRRR|RWWWWRRR'], [5, 'RRRD|WRRRRRR'], [6, 'DWU|RRRRRR'], [7, 'D|RRRD|WRRRRRR']]) {
     await next();
     if (n === 6) {
-      // 反向门：通道数字 + 「反」标记
+      // 反向门：用斜条纹区分，不再显示通道数字和「反」字
       const revDoor = $('.cell.door.reverse');
       assert.ok(revDoor, '关卡 6 应有反向门');
-      assert.equal(revDoor.querySelector('.rev-mark').textContent, '反');
-      assert.equal(revDoor.dataset.ch, '1');
+      assert.equal(revDoor.querySelector('.rev-mark'), null);
+      assert.equal(revDoor.dataset.ch, undefined);
     }
     await playSolution(sol);
     assert.ok(won(), `关卡 ${n} 应通关`);
