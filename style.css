@@ -6,6 +6,8 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+  overflow: hidden;          /* 页面本身不滚动，选关页在自己的区域里滚 */
+  overscroll-behavior: none; /* 禁止 iOS / 安卓的橡皮筋回弹和下拉刷新 */
 }
 
 body {
@@ -212,6 +214,7 @@ body {
 /* ---------- 地图 ---------- */
 
 #map-wrap {
+  touch-action: none;        /* 整块地图区域都可以滑动操作 */
   flex: 1;
   min-height: 0;
   display: flex;
@@ -437,7 +440,7 @@ body {
   flex-shrink: 0;
 }
 
-#timeline { margin-top: 6px; }
+#timeline { margin-top: 6px; touch-action: pan-x; }
 
 .tl-row { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
 
@@ -844,3 +847,16 @@ body {
   font-size: 15px;
 }
 #btn-audio.muted { opacity: 0.4; text-decoration: line-through; }
+
+/* ---------- 手感：撑门发光 ---------- */
+
+.cell.door.held::after {
+  opacity: 0.35;
+  border-width: 2px;
+  box-shadow: 0 0 10px var(--ch), inset 0 0 6px var(--ch);
+  animation: heldGlow 1.2s ease-in-out infinite;
+}
+@keyframes heldGlow {
+  0%, 100% { box-shadow: 0 0 6px var(--ch), inset 0 0 4px var(--ch); }
+  50% { box-shadow: 0 0 14px var(--ch), inset 0 0 8px var(--ch); }
+}

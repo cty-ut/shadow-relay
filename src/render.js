@@ -178,14 +178,27 @@ export class GameView {
   updateCells(game) {
     const positions = game.allPositions();
     const doors = game.doorStates(positions);
+    const held = new Set(this.heldDoors(game).map((d) => d.x + ',' + d.y));
     for (const d of this.level.doors) {
       const el = this.cellEls.get(d.x + ',' + d.y);
       el.classList.toggle('open', !!doors.get(d.x + ',' + d.y));
+      el.classList.toggle('held', held.has(d.x + ',' + d.y));
     }
     const pressed = new Set(game.pressedPlates(positions).map((p) => p.x + ',' + p.y));
     for (const p of this.level.plates) {
       this.cellEls.get(p.x + ',' + p.y).classList.toggle('pressed', pressed.has(p.x + ',' + p.y));
     }
+  }
+
+  // 被"撑住"的门：本来该关，但因为门里站着人或箱子才开着
+  heldDoors(game) {
+    const positions = game.allPositions();
+    const pressed = new Set(game.pressedPlates(positions).map((p) => p.channel));
+    return this.level.doors.filter((d) => {
+      const occupied = positions.some((p) => p.x === d.x && p.y === d.y);
+      const natural = d.type === 'reverse' ? !pressed.has(d.channel) : pressed.has(d.channel);
+      return occupied && !natural;
+    });
   }
 
   updateDots(game) {

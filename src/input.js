@@ -36,35 +36,52 @@ export function initInput(handlers) {
     }
   });
 
-  // 手机：在地图上滑动移动（拖动足够距离可连续走多步）
-  const mapEl = document.getElementById('map');
+  // 手机：在地图区域（地图和它周围的空白）滑动移动。
+  // 拖动足够距离可连续走多步；快速轻扫（没拖满一步）在手指抬起时也算一步。
+  const swipeEl = document.getElementById('map-wrap');
+  const dirOf = (dx, dy) => (Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'R' : 'L') : (dy > 0 ? 'D' : 'U'));
   let track = null;
-  mapEl.addEventListener('touchstart', (e) => {
+  swipeEl.addEventListener('touchstart', (e) => {
     if (e.touches.length === 1) {
-      track = { x: e.touches[0].clientX, y: e.touches[0].clientY, at: 0 };
+      const t = e.touches[0];
+      track = { x: t.clientX, y: t.clientY, x0: t.clientX, y0: t.clientY, at: 0, moved: false };
     } else {
       track = null;
     }
   }, { passive: true });
-  mapEl.addEventListener('touchmove', (e) => {
+  swipeEl.addEventListener('touchmove', (e) => {
     if (!track) return;
     e.preventDefault();
     const t = e.touches[0];
     const dx = t.clientX - track.x;
     const dy = t.clientY - track.y;
-    if (Math.hypot(dx, dy) >= 44) {
+    if (Math.hypot(dx, dy) >= 40) {
       const now = performance.now();
       if (now - track.at >= 90) {
-        const dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'R' : 'L') : (dy > 0 ? 'D' : 'U');
-        handlers.move(dir);
+        handlers.move(dirOf(dx, dy));
         track.at = now;
         track.x = t.clientX;
         track.y = t.clientY;
+        track.moved = true;
       }
     }
   }, { passive: false });
-  mapEl.addEventListener('touchend', () => { track = null; }, { passive: true });
-  mapEl.addEventListener('touchcancel', () => { track = null; }, { passive: true });
+  swipeEl.addEventListener('touchend', (e) => {
+    if (track && !track.moved) {
+      const t = e.changedTouches[0];
+      const dx = t.clientX - track.x0;
+      const dy = t.clientY - track.y0;
+      if (Math.hypot(dx, dy) >= 20) handlers.move(dirOf(dx, dy));
+    }
+    track = null;
+  }, { passive: true });
+  swipeEl.addEventListener('touchcancel', () => { track = null; }, { passive: true });
+
+  // 游戏界面里禁止整个网页被拖动 / 回弹（时间轴除外，长关卡的时间轴需要左右滑）
+  const gameScreen = document.getElementById('game-screen');
+  document.addEventListener('touchmove', (e) => {
+    if (gameScreen.classList.contains('active') && !e.target.closest('#timeline')) e.preventDefault();
+  }, { passive: false });
 
   for (const btn of document.querySelectorAll('#controls [data-act]')) {
     btn.addEventListener('click', () => {
