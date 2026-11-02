@@ -168,6 +168,9 @@ test('UI 集成：标题/引导/提示/章末结尾/继续游戏/箱子引导/�
       assert.ok(revDoor, '关卡 6 应有反向门');
       assert.equal(revDoor.querySelector('.rev-mark'), null);
       assert.equal(revDoor.dataset.ch, undefined);
+      // 第一次出现反向门：开场引导，第一次回溯后消失
+      assert.ok($('#guide').classList.contains('show'), '关卡 6 应有反向门的开场引导');
+      assert.match($('#guide').textContent, /斜条纹/);
     }
     await playSolution(sol);
     assert.ok(won(), `关卡 ${n} 应通关`);
@@ -183,6 +186,7 @@ test('UI 集成：标题/引导/提示/章末结尾/继续游戏/箱子引导/�
   await sleep(5);
   assert.equal($$('.tl-row')[2].querySelectorAll('.tlc.revived').length, 1, '门开后那个按键走成了，变实心');
   assert.equal($$('.tl-row')[2].querySelectorAll('.tlc.just').length, 1, '刚走成的那一格闪一下');
+  assert.match($('#guide').textContent, /重复的是按键/, '第一次看到盲按生效时弹出"发现时刻"气泡');
   assert.ok($('.entity.shadow').classList.contains('revived'), '盲按生效那一刻影子身上应闪一下');
   await playSolution('RRDD');
   assert.ok(won(), '关卡 8 应通关');

@@ -111,6 +111,7 @@ export const LEVELS = [
     maxShadows: 1,
     solution: 'DWU|RRRRRR',
     hints: ['虚线的门正好相反：没人踩板时才打开。', '影子要先踩板，等你过了第一扇门再离开。'],
+    guide: 'reverse',
   },
   {
     id: 7,
@@ -358,6 +359,7 @@ export const LEVELS = [
     maxShadows: 3,
     solution: 'WWWUU|WRRR|LLL|WWDDDDD',
     hints: ['三块板，三个影子，一人一块。', '板 1 开 A，板 2 开 B，板 3 开 C；三个影子各去一块板，你从中间往下走。'],
+    guide: 'three',
   },
   {
     id: 21,

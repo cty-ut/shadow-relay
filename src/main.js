@@ -137,6 +137,7 @@ function doMove(dir) {
   view.onStep(res, game);
   audio.playStep(res, game, before);
   guideAfterStep(from, dir, res);
+  discoverAfterStep(res);
   if (debugMode) syncDebug();
   if (res.won) onWin();
 }
@@ -234,6 +235,12 @@ function stopDemo({ silent = false } = {}) {
 
 // ---- 新手引导（5.6）：只在没通关过的关卡出现，卡住时才提示 ----
 
+// 新概念第一次出现的关卡：开场一句话，第一次回溯后消失
+const INTRO_GUIDES = {
+  reverse: '斜条纹的门正好相反：没人踩板时开着，有人踩板就关上',
+  three: '这一关最多能有 3 个影子：每回溯一次，就多一个帮手',
+};
+
 function initGuide() {
   guide = null;
   if (view) view.hideGuide();
@@ -242,6 +249,35 @@ function initGuide() {
   guide = { type: def.guide, phase: 'wait', onPlate: 0, bumps: 0 };
   if (guide.type === 'move') view.showGuide('滑动屏幕（电脑上用方向键）移动，走到终点');
   if (guide.type === 'box') view.showGuide('走进箱子就能推动它。箱子压在板上，门就一直开着');
+  if (INTRO_GUIDES[guide.type]) view.showGuide(INTRO_GUIDES[guide.type]);
+}
+
+// "发现时刻"：玩家第一次碰巧做到某件事时，用一句话说明刚才发生了什么。
+// 不提前剧透，每个玩家只出现一次；正在显示别的引导时不打断。
+const DISCOVERED_KEY = 'shadowRelay.discovered.v1';
+const DISCOVERIES = {
+  hold: '门里站着人或箱子，门就关不上',
+  revive: '影子把上一轮没走成的那一步走成了：它重复的是按键，不是路线',
+};
+
+function discover(kind) {
+  if (view.guideEl.classList.contains('show')) return;
+  let seen = {};
+  try { seen = JSON.parse(localStorage.getItem(DISCOVERED_KEY)) || {}; } catch { /* 忽略 */ }
+  if (seen[kind]) return;
+  seen[kind] = true;
+  try { localStorage.setItem(DISCOVERED_KEY, JSON.stringify(seen)); } catch { /* 忽略 */ }
+  const text = DISCOVERIES[kind];
+  view.showGuide(text);
+  setTimeout(() => {
+    if (view && view.guideEl.textContent === text) view.hideGuide();
+  }, 3500);
+}
+
+function discoverAfterStep(res) {
+  if (res.won) return;
+  if (res.revived && res.revived.length) discover('revive');
+  else if (view.heldDoors(game).length) discover('hold');
 }
 
 function guideAfterStep(from, dir, res) {
@@ -269,6 +305,7 @@ function guideAfterStep(from, dir, res) {
 }
 
 function guideAfterRewind() {
+  if (guide && INTRO_GUIDES[guide.type]) { view.hideGuide(); guide = null; return; }
   if (!guide || guide.type !== 'firstRewind' || guide.phase === 'after') return;
   guide.phase = 'after';
   view.showGuide('影子会重复你刚才的动作。现在去门那里。');
