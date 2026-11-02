@@ -47,7 +47,7 @@ src/solver.js     求解器（最少影子数/最少步数/解数/是否必须�
 src/levels.js     50 关数据（含求解器验证过的 par 最少步数）
 src/render.js     画面与反馈
 src/input.js      键盘 / 滑动 / 按钮
-src/audio.js      Web Audio 代码合成音效
+src/audio.js      Web Audio 代码合成音效和背景音乐
 src/main.js       控制器
 src/telemetry.js  试玩数据记录（localStorage，选关页可导出 JSON）
 tools/solve.mjs   关卡分析工具

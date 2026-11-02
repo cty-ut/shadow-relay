@@ -61,19 +61,11 @@ export class GameView {
         if (type === 'plate') {
           const ch = plates.find((p) => p.x === x && p.y === y).channel;
           el.classList.add(CHANNEL_CLASS[ch]);
-          el.dataset.ch = String(ch);   // 板上显示通道数字
           el.addEventListener('click', () => this.toggleChannel(ch)); // 点板高亮同通道的门
         } else if (type === 'door') {
           const d = doors.find((p) => p.x === x && p.y === y);
           el.classList.add(CHANNEL_CLASS[d.channel], d.type);
           el.dataset.door = x + ',' + d.y;
-          el.dataset.ch = String(d.channel); // 门上显示通道数字
-          if (d.type === 'reverse') {
-            const mark = document.createElement('span');
-            mark.className = 'rev-mark';
-            mark.textContent = '反';
-            el.appendChild(mark);
-          }
         }
         this.mapEl.appendChild(el);
         this.cellEls.set(x + ',' + y, el);
