@@ -15,6 +15,7 @@ export const CHAPTERS = {
 export const LEVELS = [
   {
     id: 1,
+    par: 4,
     chapter: 1,
     name: '踩板开门',
     map: [
@@ -30,6 +31,7 @@ export const LEVELS = [
   },
   {
     id: 2,
+    par: 3,
     chapter: 1,
     name: '留下来帮忙',
     map: [
@@ -46,6 +48,7 @@ export const LEVELS = [
   },
   {
     id: 3,
+    par: 4,
     chapter: 1,
     name: '再来一次',
     map: [
@@ -62,6 +65,7 @@ export const LEVELS = [
   },
   {
     id: 4,
+    par: 8,
     chapter: 1,
     name: '等一等',
     map: [
@@ -78,6 +82,7 @@ export const LEVELS = [
   },
   {
     id: 5,
+    par: 7,
     chapter: 1,
     name: '别抢路',
     map: [
@@ -93,6 +98,7 @@ export const LEVELS = [
   },
   {
     id: 6,
+    par: 6,
     chapter: 1,
     name: '准时离开',
     map: [
@@ -108,6 +114,7 @@ export const LEVELS = [
   },
   {
     id: 7,
+    par: 8,
     chapter: 1,
     name: '接力',
     map: [
@@ -123,6 +130,7 @@ export const LEVELS = [
   },
   {
     id: 8,
+    par: 6,
     chapter: 1,
     name: '推不开的门',
     map: [
@@ -139,6 +147,7 @@ export const LEVELS = [
   },
   {
     id: 9,
+    par: 7,
     chapter: 1,
     name: '对着关着的门走',
     map: [
@@ -156,6 +165,7 @@ export const LEVELS = [
   // ---------------------------------------------------------------- 第 2 章
   {
     id: 10,
+    par: 6,
     chapter: 2,
     name: '晚点出发',
     map: [
@@ -171,6 +181,7 @@ export const LEVELS = [
   },
   {
     id: 11,
+    par: 10,
     chapter: 2,
     name: '踩、松、踩',
     map: [
@@ -187,6 +198,7 @@ export const LEVELS = [
   },
   {
     id: 12,
+    par: 11,
     chapter: 2,
     name: '两份工作',
     map: [
@@ -203,6 +215,7 @@ export const LEVELS = [
   },
   {
     id: 13,
+    par: 9,
     chapter: 2,
     name: '开一扇，关一扇',
     map: [
@@ -219,6 +232,7 @@ export const LEVELS = [
   },
   {
     id: 14,
+    par: 7,
     chapter: 2,
     name: '分头行动',
     map: [
@@ -238,6 +252,7 @@ export const LEVELS = [
   },
   {
     id: 15,
+    par: 11,
     chapter: 2,
     name: '在门里等',
     map: [
@@ -257,6 +272,7 @@ export const LEVELS = [
   },
   {
     id: 16,
+    par: 9,
     chapter: 2,
     name: '一放一收',
     map: [
@@ -273,6 +289,7 @@ export const LEVELS = [
   },
   {
     id: 17,
+    par: 9,
     chapter: 2,
     name: '帮我撑着门',
     map: [
@@ -288,6 +305,7 @@ export const LEVELS = [
   },
   {
     id: 18,
+    par: 8,
     chapter: 2,
     name: '一个人的接力',
     map: [
@@ -303,6 +321,7 @@ export const LEVELS = [
   },
   {
     id: 19,
+    par: 14,
     chapter: 2,
     name: '交换角色',
     map: [
@@ -320,6 +339,7 @@ export const LEVELS = [
   // ---------------------------------------------------------------- 第 3 章
   {
     id: 20,
+    par: 7,
     chapter: 3,
     name: '三个影子',
     map: [
@@ -341,6 +361,7 @@ export const LEVELS = [
   },
   {
     id: 21,
+    par: 7,
     chapter: 3,
     name: '别踩那块板',
     map: [
@@ -362,6 +383,7 @@ export const LEVELS = [
   },
   {
     id: 22,
+    par: 7,
     chapter: 3,
     name: '交叉',
     map: [
@@ -379,6 +401,7 @@ export const LEVELS = [
   },
   {
     id: 23,
+    par: 7,
     chapter: 3,
     name: '挪一格',
     map: [
@@ -394,6 +417,7 @@ export const LEVELS = [
   },
   {
     id: 24,
+    par: 10,
     chapter: 3,
     name: '两人三板',
     map: [
@@ -415,6 +439,7 @@ export const LEVELS = [
   },
   {
     id: 25,
+    par: 8,
     chapter: 3,
     name: '来回挪',
     map: [
@@ -430,6 +455,7 @@ export const LEVELS = [
   },
   {
     id: 26,
+    par: 9,
     chapter: 3,
     name: '跟紧',
     map: [
@@ -445,6 +471,7 @@ export const LEVELS = [
   },
   {
     id: 27,
+    par: 14,
     chapter: 3,
     name: '长跑',
     map: [
@@ -462,6 +489,7 @@ export const LEVELS = [
   },
   {
     id: 28,
+    par: 16,
     chapter: 3,
     name: '一人三板',
     map: [
@@ -483,6 +511,7 @@ export const LEVELS = [
   },
   {
     id: 29,
+    par: 10,
     chapter: 3,
     name: '放行',
     map: [
@@ -499,6 +528,7 @@ export const LEVELS = [
   // ---------------------------------------------------------------- 第 4 章
   {
     id: 30,
+    par: 6,
     chapter: 4,
     name: '推箱子',
     map: [
@@ -512,9 +542,11 @@ export const LEVELS = [
     maxShadows: 0,
     solution: 'RDURRR',
     hints: ['箱子压在板上，门就一直开着。', '站到箱子上面，往下推。'],
+    guide: 'box',
   },
   {
     id: 31,
+    par: 8,
     chapter: 4,
     name: '替身',
     map: [
@@ -533,6 +565,7 @@ export const LEVELS = [
   },
   {
     id: 32,
+    par: 9,
     chapter: 4,
     name: '计时器',
     map: [
@@ -549,6 +582,7 @@ export const LEVELS = [
   },
   {
     id: 33,
+    par: 10,
     chapter: 4,
     name: '别推过头',
     map: [
@@ -565,6 +599,7 @@ export const LEVELS = [
   },
   {
     id: 34,
+    par: 10,
     chapter: 4,
     name: '反向计时',
     map: [
@@ -581,6 +616,7 @@ export const LEVELS = [
   },
   {
     id: 35,
+    par: 12,
     chapter: 4,
     name: '一直压着',
     map: [
@@ -602,6 +638,7 @@ export const LEVELS = [
   },
   {
     id: 36,
+    par: 8,
     chapter: 4,
     name: '晚点推',
     map: [
@@ -621,6 +658,7 @@ export const LEVELS = [
   },
   {
     id: 37,
+    par: 9,
     chapter: 4,
     name: '两个替身',
     map: [
@@ -642,6 +680,7 @@ export const LEVELS = [
   },
   {
     id: 38,
+    par: 15,
     chapter: 4,
     name: '一个人推三箱',
     map: [
@@ -663,6 +702,7 @@ export const LEVELS = [
   },
   {
     id: 39,
+    par: 9,
     chapter: 4,
     name: '推完就走',
     map: [
@@ -685,6 +725,7 @@ export const LEVELS = [
   // ---------------------------------------------------------------- 第 5 章
   {
     id: 40,
+    par: 10,
     chapter: 5,
     name: '只推一个',
     map: [
@@ -701,6 +742,7 @@ export const LEVELS = [
   },
   {
     id: 41,
+    par: 8,
     chapter: 5,
     name: '隔门推箱',
     map: [
@@ -721,6 +763,7 @@ export const LEVELS = [
   },
   {
     id: 42,
+    par: 12,
     chapter: 5,
     name: '一路推过去',
     map: [
@@ -737,6 +780,7 @@ export const LEVELS = [
   },
   {
     id: 43,
+    par: 7,
     chapter: 5,
     name: '陷阱箱',
     map: [
@@ -758,6 +802,7 @@ export const LEVELS = [
   },
   {
     id: 44,
+    par: 9,
     chapter: 5,
     name: '推箱过门',
     map: [
@@ -775,6 +820,7 @@ export const LEVELS = [
   },
   {
     id: 45,
+    par: 11,
     chapter: 5,
     name: '两箱交叉',
     map: [
@@ -792,6 +838,7 @@ export const LEVELS = [
   },
   {
     id: 46,
+    par: 10,
     chapter: 5,
     name: '守门人',
     map: [
@@ -808,6 +855,7 @@ export const LEVELS = [
   },
   {
     id: 47,
+    par: 12,
     chapter: 5,
     name: '推完再进门',
     map: [
@@ -824,6 +872,7 @@ export const LEVELS = [
   },
   {
     id: 48,
+    par: 10,
     chapter: 5,
     name: '屋里的箱子',
     map: [
@@ -840,6 +889,7 @@ export const LEVELS = [
   },
   {
     id: 49,
+    par: 9,
     chapter: 5,
     name: '一个人进屋',
     map: [
@@ -856,6 +906,7 @@ export const LEVELS = [
   },
   {
     id: 50,
+    par: 10,
     chapter: 5,
     name: '终章',
     map: [

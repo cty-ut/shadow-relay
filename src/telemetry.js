@@ -73,13 +73,53 @@ export function endLevel(cleared, quitAt = null) {
 export function getRecords() { return lsGet(RECORDS_KEY, []); }
 
 export function isCleared(levelId) {
-  return !!lsGet(PROGRESS_KEY, {})[levelId];
+  const v = lsGet(PROGRESS_KEY, {})[levelId];
+  return v === true || (!!v && v.cleared === true);
+}
+
+// 最优解星标（通关时最后一轮步数 ≤ par）
+export function hasPar(levelId) {
+  const v = lsGet(PROGRESS_KEY, {})[levelId];
+  return !!v && typeof v === 'object' && v.par === true;
 }
 
 export function markCleared(levelId) {
   const p = lsGet(PROGRESS_KEY, {});
-  p[levelId] = true;
+  const prev = p[levelId];
+  p[levelId] = prev && typeof prev === 'object' ? { ...prev, cleared: true } : true;
   lsSet(PROGRESS_KEY, p);
+}
+
+export function markPar(levelId) {
+  const p = lsGet(PROGRESS_KEY, {});
+  const prev = p[levelId];
+  p[levelId] = { ...(prev && typeof prev === 'object' ? prev : {}), cleared: true, par: true };
+  lsSet(PROGRESS_KEY, p);
+}
+
+// 继续游戏：最后玩过、还没通关的那一关（其后已经通关的记录不算）
+export function getContinueTarget() {
+  const records = getRecords();
+  for (let i = records.length - 1; i >= 0; i--) {
+    const r = records[i];
+    if (!r.cleared && !isCleared(r.levelId)) return r.levelId;
+  }
+  return null;
+}
+
+// 结尾画面统计：总通关数（关卡数）、总用时（从试玩数据里算）
+export function getStats() {
+  let clearedCount = 0;
+  for (const v of Object.values(lsGet(PROGRESS_KEY, {}))) {
+    if (v === true || (v && v.cleared)) clearedCount++;
+  }
+  let totalMs = 0;
+  for (const r of getRecords()) {
+    const s = Date.parse(r.startTime);
+    const e = Date.parse(r.endTime);
+    if (!isNaN(s) && !isNaN(e) && e > s) totalMs += e - s;
+  }
+  return { clearedCount, totalMs };
 }
 
 export function clearAll() {

@@ -24,6 +24,8 @@ export class GameView {
     this.justRevived = [];   // 本步"灰色箭头变实心"的影子
     this.rwTimer = null;
     this.cell = 40;
+    this.hlChannel = null;   // 点板高亮的通道
+    this.longTimeline = this.level.maxSteps > 14; // 长关卡时间轴横向滚动
     this.playerEl = null;
     this.shadowEls = [];
     this.boxEls = [];
@@ -38,7 +40,10 @@ export class GameView {
 
   destroy() {
     window.removeEventListener('resize', this._onResize);
-    for (const el of this.shadowEls) this._clearBadgeTimer(el);
+    for (const el of this.shadowEls) {
+      this._clearBadgeTimer(el);
+      if (el._revTimer) clearTimeout(el._revTimer);
+    }
     this._stopRewindAnim();
     this.hideGuide();
   }
@@ -54,11 +59,21 @@ export class GameView {
         const el = document.createElement('div');
         el.className = 'cell ' + type;
         if (type === 'plate') {
-          el.classList.add(CHANNEL_CLASS[plates.find((p) => p.x === x && p.y === y).channel]);
+          const ch = plates.find((p) => p.x === x && p.y === y).channel;
+          el.classList.add(CHANNEL_CLASS[ch]);
+          el.dataset.ch = String(ch);   // 板上显示通道数字
+          el.addEventListener('click', () => this.toggleChannel(ch)); // 点板高亮同通道的门
         } else if (type === 'door') {
           const d = doors.find((p) => p.x === x && p.y === y);
           el.classList.add(CHANNEL_CLASS[d.channel], d.type);
-          el.dataset.door = x + ',' + y;
+          el.dataset.door = x + ',' + d.y;
+          el.dataset.ch = String(d.channel); // 门上显示通道数字
+          if (d.type === 'reverse') {
+            const mark = document.createElement('span');
+            mark.className = 'rev-mark';
+            mark.textContent = '反';
+            el.appendChild(mark);
+          }
         }
         this.mapEl.appendChild(el);
         this.cellEls.set(x + ',' + y, el);
@@ -69,6 +84,17 @@ export class GameView {
     this.entitiesLayer = document.createElement('div');
     this.entitiesLayer.className = 'layer entities';
     this.mapEl.append(this.dotsLayer, this.entitiesLayer);
+  }
+
+  // 点击一块板：高亮同通道的所有门和板，再点一次取消
+  toggleChannel(channel) {
+    this.hlChannel = this.hlChannel === channel ? null : channel;
+    for (const d of this.level.doors) {
+      this.cellEls.get(d.x + ',' + d.y).classList.toggle('hl', this.hlChannel === d.channel);
+    }
+    for (const p of this.level.plates) {
+      this.cellEls.get(p.x + ',' + p.y).classList.toggle('hl', this.hlChannel === p.channel);
+    }
   }
 
   layout() {
@@ -218,6 +244,17 @@ export class GameView {
       rows.push(`<div class="tl-row"><span class="tl-label">影${idx + 1}</span><div class="tl-cells">${cells}</div></div>`);
     });
     this.timelineEl.innerHTML = rows.join('');
+    this.timelineEl.classList.toggle('long', this.longTimeline);
+    if (this.longTimeline) this.scrollTimelineToCur();
+  }
+
+  // 长关卡：自动滚动，让当前步保持在时间轴中间附近
+  scrollTimelineToCur() {
+    const cur = this.timelineEl.querySelector('.tlc.cur');
+    if (!cur) return;
+    const tlRect = this.timelineEl.getBoundingClientRect();
+    const curRect = cur.getBoundingClientRect();
+    this.timelineEl.scrollLeft += curRect.left + curRect.width / 2 - (tlRect.left + this.timelineEl.clientWidth / 2);
   }
 
   updateHeader(game) {
@@ -297,6 +334,17 @@ export class GameView {
       if (el) this.bump(el, f.dir);
     }
     for (const i of res.blockedShadows) this.blockedFlash(i);
+    for (const i of res.revived ?? []) this.revivedFlash(i); // 盲按生效那一刻闪一下，和时间轴呼应
+  }
+
+  revivedFlash(i) {
+    const el = this.shadowEls[i];
+    if (!el) return;
+    el.classList.remove('revived');
+    void el.offsetWidth;
+    el.classList.add('revived');
+    clearTimeout(el._revTimer);
+    el._revTimer = setTimeout(() => el.classList.remove('revived'), 850);
   }
 
   bump(el, dir) {
@@ -387,26 +435,60 @@ export class GameView {
   }
 
   // ---- 通关 ----
-
-  winFx({ shadows, steps, hasNext, onNext, onReplay, onSelect }) {
+  // title：默认「通关！」；章末关卡传「第 N 章完成」
+  // optimal：最后一轮步数 ≤ par 时显示「最优解！」
+  winFx({ title = '通关！', shadows, steps, optimal = false, hasNext, onNext, onReplay, onSelect }) {
     setTimeout(() => {
       const fx = document.getElementById('fx-win');
+      fx.querySelector('h2').textContent = title;
+      fx.querySelector('.win-ending').hidden = true;
       fx.querySelector('.win-stats').textContent = `用了 ${shadows} 个影子 · 总步数 ${steps}`;
-      const actions = fx.querySelector('.win-actions');
-      actions.innerHTML = '';
-      const mk = (label, fn, primary) => {
-        const b = document.createElement('button');
-        b.textContent = label;
-        if (primary) b.classList.add('primary');
-        b.addEventListener('click', fn);
-        actions.appendChild(b);
-      };
-      if (hasNext) mk('下一关', onNext, true);
-      mk(hasNext ? '重玩本关' : '再玩一次', onReplay, !hasNext);
-      mk('选关', onSelect, false);
+      fx.querySelector('.win-sub').hidden = true;
+      fx.querySelector('.win-par').hidden = !optimal;
+      this.buildWinActions(fx, [
+        hasNext && ['下一关', onNext, true],
+        [hasNext ? '重玩本关' : '再玩一次', onReplay, !hasNext],
+        ['选关', onSelect, false],
+      ]);
       this.confetti(fx);
       fx.classList.add('show');
     }, 380);
+  }
+
+  // 第 50 关通关后的结尾画面：一句收尾的话、总通关数、总用时
+  endFx({ shadows, steps, optimal = false, clearedCount, totalText, onReplay, onSelect }) {
+    setTimeout(() => {
+      const fx = document.getElementById('fx-win');
+      fx.querySelector('h2').textContent = '全部通关！';
+      const ending = fx.querySelector('.win-ending');
+      ending.hidden = false;
+      ending.textContent = '你和过去的每一个自己，都走到了终点。';
+      fx.querySelector('.win-stats').textContent = `通关 ${clearedCount}/${this.level.id} · 总用时 ${totalText}`;
+      const sub = fx.querySelector('.win-sub');
+      sub.hidden = false;
+      sub.textContent = `最后一关：用了 ${shadows} 个影子 · 总步数 ${steps}`;
+      fx.querySelector('.win-par').hidden = !optimal;
+      this.buildWinActions(fx, [
+        ['回到选关', onSelect, true],
+        ['再玩一次', onReplay, false],
+      ]);
+      this.confetti(fx);
+      fx.classList.add('show');
+    }, 380);
+  }
+
+  buildWinActions(fx, list) {
+    const actions = fx.querySelector('.win-actions');
+    actions.innerHTML = '';
+    for (const item of list) {
+      if (!item) continue;
+      const [label, fn, primary] = item;
+      const b = document.createElement('button');
+      b.textContent = label;
+      if (primary) b.classList.add('primary');
+      b.addEventListener('click', fn);
+      actions.appendChild(b);
+    }
   }
 
   confetti(fx) {

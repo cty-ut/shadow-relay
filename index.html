@@ -4,15 +4,29 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="影子接力：回合制解谜游戏。把这一轮的自己录下来，和过去的你合作走到终点。50 关。">
 <title>影子接力</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div id="app">
 
-  <section id="select-screen" class="screen active">
+  <section id="title-screen" class="screen active">
     <h1 class="logo">影子接力</h1>
     <p class="tagline">把这一轮的自己录下来，时间倒回后和过去的你配合走到终点</p>
+    <div class="title-actions">
+      <button id="btn-start" class="btn primary big">开始游戏</button>
+      <button id="btn-select" class="btn">选关</button>
+      <button id="btn-help" class="btn">玩法说明</button>
+    </div>
+  </section>
+
+  <section id="select-screen" class="screen">
+    <header class="select-header">
+      <button id="btn-back-title" class="icon-btn" aria-label="返回标题">←</button>
+      <h1 class="logo small">影子接力</h1>
+    </header>
+    <button id="btn-continue" class="btn primary" hidden>继续</button>
     <div id="level-list"></div>
     <div class="export-row">
       <button id="btn-export" class="btn">导出试玩数据</button>
@@ -55,6 +69,8 @@
 
 </div>
 
+<button id="btn-audio" class="icon-btn" aria-label="静音开关">♪</button>
+
 <div id="fx-rewind">
   <div class="flash"></div>
   <div class="label">第 2 轮</div>
@@ -63,10 +79,44 @@
 <div id="fx-win">
   <div class="win-panel">
     <h2>通关！</h2>
+    <p class="win-ending" hidden></p>
     <p class="win-stats"></p>
+    <p class="win-sub" hidden></p>
+    <p class="win-par" hidden>★ 最优解！</p>
     <div class="win-actions"></div>
   </div>
   <div class="confetti"></div>
+</div>
+
+<div id="fx-help">
+  <div class="help-panel">
+    <h2>玩法说明</h2>
+    <div class="help-item">
+      <div class="help-fig">
+        <span class="h-circle">你</span>
+        <span class="h-note">回溯 ⟲</span>
+        <span class="h-shadow">1</span>
+      </div>
+      <p>回溯会把这一轮的你变成影子</p>
+    </div>
+    <div class="help-item">
+      <div class="help-fig">
+        <span class="h-keys">→ → →</span>
+        <span class="h-note">重复</span>
+        <span class="h-shadow">1</span>
+        <span class="h-arrow">→</span>
+        <span class="h-door"></span>
+      </div>
+      <p>影子重复你按过的键——当时没走成的，这一轮可能走成</p>
+    </div>
+    <div class="help-item">
+      <div class="help-fig">
+        <span class="h-door open"><span class="h-circle small">你</span></span>
+      </div>
+      <p>站在门里，门就关不上</p>
+    </div>
+    <button id="btn-help-close" class="btn primary">知道了</button>
+  </div>
 </div>
 
 <div id="toast"></div>
