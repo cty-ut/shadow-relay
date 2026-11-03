@@ -247,7 +247,12 @@ function initGuide() {
   const def = LEVELS[levelIndex];
   if (!def.guide || telemetry.isCleared(def.id)) return;
   guide = { type: def.guide, phase: 'wait', onPlate: 0, bumps: 0 };
-  if (guide.type === 'move') view.showGuide('滑动屏幕（电脑上用方向键）移动，走到终点');
+  if (guide.type === 'move') {
+    // 第 1 关手把手：先认识自己和终点，再认识板和门
+    guide.phase = 'start';
+    view.showGuide('你是白色的圆圈。滑动屏幕（电脑上用方向键）移动，目标是走到绿色的「终」');
+    view.spot(game.level.end ? [game.level.end] : [], { player: true });
+  }
   if (guide.type === 'box') view.showGuide('走进箱子就能推动它。箱子压在板上，门就一直开着');
   if (INTRO_GUIDES[guide.type]) view.showGuide(INTRO_GUIDES[guide.type]);
 }
@@ -284,7 +289,17 @@ function guideAfterStep(from, dir, res) {
   if (!guide) return;
   if (res.won) { view.hideGuide(); guide = null; return; }
   if (guide.type === 'move') {
-    if (guide.phase === 'wait') { view.hideGuide(); guide.phase = 'done'; }
+    const onPlate = game.level.plates.some((p) => p.x === game.player.x && p.y === game.player.y);
+    if (guide.phase === 'start') {
+      guide.phase = 'door';
+      view.showGuide('红色的门挡住了路。踩上同样是红色的压力板，门就会打开');
+      view.spot([...game.level.plates, ...game.level.doors]);
+    }
+    if (guide.phase === 'door' && onPlate) {
+      guide.phase = 'open';
+      view.showGuide('门开了！站在板上时门一直开着，直接走过去');
+      view.spot(game.level.doors);
+    }
     return;
   }
   if (guide.type === 'box') {
@@ -298,9 +313,9 @@ function guideAfterStep(from, dir, res) {
     const d = { U: [0, -1], D: [0, 1], L: [-1, 0], R: [1, 0] }[dir];
     if (d && game.cellAt(from.x + d[0], from.y + d[1]) === 'door') guide.bumps++;
   }
-  if (guide.onPlate >= 2 || guide.bumps >= 2 || !game.canMove) {
+  if (guide.onPlate >= 1 || guide.bumps >= 1 || !game.canMove) {
     guide.phase = 'shown';
-    view.showGuide('按「回溯」：这一轮的你会留下来帮下一轮的你', { pulse: 'rewind' });
+    view.showGuide('一个人没法同时踩板又过门。按「回溯」：时间回到开头，这一轮的你会变成影子留下来帮你', { pulse: 'rewind' });
   }
 }
 

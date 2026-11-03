@@ -75,7 +75,7 @@ test('UI 集成：标题/引导/提示/章末结尾/继续游戏/箱子引导/�
   assert.ok($('#fx-help').classList.contains('show'), '玩法说明应打开');
   $('#btn-help-close').click();
   assert.ok(!$('#fx-help').classList.contains('show'));
-  assert.equal($$('#fx-help .help-item').length, 3, '玩法说明应有 3 张图示');
+  assert.equal($$('#fx-help .help-item').length, 6, '玩法说明只讲基础：目标、板和门、条纹门、回溯、箱子、提示');
 
   // 静音开关：切换 + 持久化
   const audioBtn = $('#btn-audio');
@@ -101,6 +101,9 @@ test('UI 集成：标题/引导/提示/章末结尾/继续游戏/箱子引导/�
   assert.equal($('#level-name').textContent, '1 · 踩板开门');
   assert.equal($('[data-act="rewind"]').hidden, true, 'maxShadows=0 时隐藏回溯按钮');
   assert.ok($('#guide').classList.contains('show'), '关卡 1 应有移动引导');
+  assert.match($('#guide').textContent, /白色的圆圈/);
+  assert.ok($('.entity.player').classList.contains('spot'), '引导说到的玩家在闪烁');
+  assert.ok($('.cell.end').classList.contains('spot'), '引导说到的终点在闪烁');
   assert.ok($('#hint-box').classList.contains('hidden'), '提示默认隐藏');
 
   const plateCell = $('.cell.plate');
@@ -115,8 +118,15 @@ test('UI 集成：标题/引导/提示/章末结尾/继续游戏/箱子引导/�
 
   press('R');
   await sleep(5);
-  assert.ok(!$('#guide').classList.contains('show'), '走一步后引导消失');
-  await playSolution('RRR');
+  assert.match($('#guide').textContent, /压力板/, '走一步后讲板和门');
+  assert.ok($('.cell.plate').classList.contains('spot') && $('.cell.door').classList.contains('spot'));
+  assert.ok(!$('.cell.end').classList.contains('spot'), '换一句话时上一句的闪烁清掉');
+  press('R');
+  await sleep(5);
+  assert.match($('#guide').textContent, /门开了/, '站上板后提示直接走过去');
+  await playSolution('RR');
+  assert.ok(!$('#guide').classList.contains('show'), '通关后引导消失');
+  assert.equal($$('.spot').length, 0, '通关后闪烁清掉');
   assert.ok(won(), '关卡 1 应通关');
   assert.ok(!$('#fx-win .win-par').hidden, '按最优步数通关应显示「最优解！」');
 
@@ -126,10 +136,10 @@ test('UI 集成：标题/引导/提示/章末结尾/继续游戏/箱子引导/�
   assert.ok(!$('#guide').classList.contains('show'), '进入关卡时不弹引导');
   press('D');
   await sleep(5);
-  assert.ok(!$('#guide').classList.contains('show'), '只站了 1 步，还不触发');
+  assert.ok($('#guide').classList.contains('show'), '一站上板就提示回溯');
+  assert.match($('#guide').textContent, /回溯/);
   press('W');
   await sleep(5);
-  assert.ok($('#guide').classList.contains('show'), '在板上停留 2 步后触发引导');
   assert.ok($('[data-act="rewind"]').classList.contains('pulse'), '回溯按钮闪烁');
   rewind();
   await sleep(30);

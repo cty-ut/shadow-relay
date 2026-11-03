@@ -828,7 +828,42 @@ body {
   align-items: center;
   justify-content: center;
 }
-.h-door.open { border-style: dashed; background: rgba(224, 94, 94, 0.14); }
+.h-door.rev {
+  border-style: dashed;
+  background: repeating-linear-gradient(45deg, #e05e5e 0 3px, transparent 3px 7px);
+}
+
+.h-plate {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 2px solid #e05e5e;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.h-end {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background: #24402c;
+  border: 1px solid #38684a;
+  color: #9fe6b4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.h-box {
+  width: 30px;
+  height: 30px;
+  border-radius: 3px;
+  background:
+    linear-gradient(45deg, transparent 44%, rgba(70, 52, 30, 0.55) 44% 56%, transparent 56%),
+    linear-gradient(-45deg, transparent 44%, rgba(70, 52, 30, 0.55) 44% 56%, transparent 56%),
+    #cdb991;
+  border: 3px solid #6e5634;
+}
 
 .h-note { color: #8fa3c8; font-size: 12px; }
 .h-arrow { color: #98a0af; font-size: 16px; }
@@ -859,4 +894,17 @@ body {
 @keyframes heldGlow {
   0%, 100% { box-shadow: 0 0 6px var(--ch), inset 0 0 4px var(--ch); }
   50% { box-shadow: 0 0 14px var(--ch), inset 0 0 8px var(--ch); }
+}
+
+/* ---------- 引导时让说到的东西闪烁 ---------- */
+
+.cell.spot { animation: spotCell 1s ease-in-out infinite; z-index: 1; }
+@keyframes spotCell {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+  50% { box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9), 0 0 14px rgba(255, 255, 255, 0.6); }
+}
+.entity.spot .body { animation: spotBody 1s ease-in-out infinite; }
+@keyframes spotBody {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+  50% { box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.85), 0 0 16px rgba(255, 255, 255, 0.6); }
 }
