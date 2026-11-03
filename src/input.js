@@ -36,13 +36,16 @@ export function initInput(handlers) {
     }
   });
 
-  // 手机：在地图区域（地图和它周围的空白）滑动移动。
+  // 手机 / 平板：游戏界面里任意位置滑动都能移动（平板上游戏区两侧的空白也算），
+  // 按钮、时间轴和弹窗上的触摸除外。
   // 拖动足够距离可连续走多步；快速轻扫（没拖满一步）在手指抬起时也算一步。
-  const swipeEl = document.getElementById('map-wrap');
+  const gameScreen = document.getElementById('game-screen');
+  const swipeEl = document;
+  const NO_SWIPE = 'button, a, #timeline, #fx-win, #fx-help, #debug-panel';
   const dirOf = (dx, dy) => (Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'R' : 'L') : (dy > 0 ? 'D' : 'U'));
   let track = null;
   swipeEl.addEventListener('touchstart', (e) => {
-    if (e.touches.length === 1) {
+    if (e.touches.length === 1 && gameScreen.classList.contains('active') && !e.target.closest(NO_SWIPE)) {
       const t = e.touches[0];
       track = { x: t.clientX, y: t.clientY, x0: t.clientX, y0: t.clientY, at: 0, moved: false };
     } else {
@@ -78,7 +81,6 @@ export function initInput(handlers) {
   swipeEl.addEventListener('touchcancel', () => { track = null; }, { passive: true });
 
   // 游戏界面里禁止整个网页被拖动 / 回弹（时间轴除外，长关卡的时间轴需要左右滑）
-  const gameScreen = document.getElementById('game-screen');
   document.addEventListener('touchmove', (e) => {
     if (gameScreen.classList.contains('active') && !e.target.closest('#timeline')) e.preventDefault();
   }, { passive: false });
