@@ -14,6 +14,7 @@ export class GameView {
     this.hintText = screenEl.querySelector('#hint-text');
     this.statusEl = screenEl.querySelector('#status');
     this.guideEl = screenEl.querySelector('#guide');
+    this.spotEls = [];       // 引导时正在闪烁的格子/角色
     this.cellEls = new Map();
     this.btns = new Map();
     for (const btn of screenEl.querySelectorAll('#controls [data-act]')) {
@@ -308,7 +309,16 @@ export class GameView {
     for (const [act, btn] of this.btns) btn.classList.toggle('pulse', act === pulse);
   }
 
+  // 让引导里说到的格子（和玩家）闪烁；传空数组即清除
+  spot(cells = [], { player = false } = {}) {
+    for (const el of this.spotEls) el.classList.remove('spot');
+    this.spotEls = cells.map((p) => this.cellEls.get(p.x + ',' + p.y)).filter(Boolean);
+    if (player && this.playerEl) this.spotEls.push(this.playerEl);
+    for (const el of this.spotEls) el.classList.add('spot');
+  }
+
   hideGuide() {
+    this.spot([]);
     this.guideEl.classList.remove('show');
     for (const btn of this.btns.values()) btn.classList.remove('pulse');
   }
